@@ -6,19 +6,21 @@ final class Price {
   Price.fromJson(Map<String, dynamic> json)
   : titleId = json['title_id'],
     salesStatus = json['sales_status'],
-    regularPrice = RegularPrice.fromJson(json['regular_price']),
-    goldPoint = GoldPoint.fromJson(json['gold_point']);
+    regularPrice = (json['regular_price'] as Map<String, dynamic>?)?.parseRegularPrice(),
+    goldPoint = (json['gold_point'] as Map<String, dynamic>?)?.parseGoldPoint();
 
   final int titleId;
   final String salesStatus;
-  final RegularPrice regularPrice;
-  final GoldPoint goldPoint;
+  final RegularPrice? regularPrice;
+  final GoldPoint? goldPoint;
 
   Map<String, dynamic> toJson() => {
     'title_id': titleId,
     'sales_status': salesStatus,
-    'regular_price': regularPrice.toJson(),
-    'gold_point': goldPoint.toJson(),
+    if (regularPrice != null)
+    'regular_price': regularPrice!.toJson(),
+    if (goldPoint != null)
+    'gold_point': goldPoint!.toJson(),
   };
 }
 
@@ -26,11 +28,11 @@ final class RegularPrice {
   RegularPrice.fromJson(Map<String, dynamic> json)
   : amount = json['amount'],
     currency = json['currency'],
-    rawValue = json['rawValue'];
+    rawValue = double.parse(json['raw_value']);
 
   final String amount;
   final String currency;
-  final String rawValue;
+  final double rawValue;
 
   Map<String, dynamic> toJson() => {
     'amount': amount,
@@ -67,23 +69,8 @@ final class GoldPoint {
   };
 }
 
-/*
- "70010000000025": {
-  "title_id": 70010000000025,
-  "sales_status": "onsale",
-  "regular_price": {
-   "amount": "$59.99",
-   "currency": "USD",
-   "raw_value": "59.99"
-  },
-  "gold_point": {
-   "basic_gift_gp": "300",
-   "basic_gift_rate": "0.05",
-   "consume_gp": "0",
-   "extra_gold_points": [],
-   "gift_gp": "300",
-   "gift_rate": "0.05"
-  }
- },
+extension on Map<String, dynamic> {
+  GoldPoint parseGoldPoint() => GoldPoint.fromJson(this);
 
- */
+  RegularPrice parseRegularPrice() => RegularPrice.fromJson(this);
+}

@@ -4,4 +4,7 @@
 
 library;
 
+export 'src/language.dart';
 export 'src/price.dart';
+export 'src/title_db.dart';
+export 'src/title_price.dart';
